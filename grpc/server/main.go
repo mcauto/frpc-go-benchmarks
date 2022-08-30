@@ -1,30 +1,32 @@
 /*
-	Copyright 2022 Loophole Labs
+Copyright 2022 Loophole Labs
 
-	Licensed under the Apache License, Version 2.0 (the "License");
-	you may not use this file except in compliance with the License.
-	You may obtain a copy of the License at
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
 
-		   http://www.apache.org/licenses/LICENSE-2.0
+	http://www.apache.org/licenses/LICENSE-2.0
 
-	Unless required by applicable law or agreed to in writing, software
-	distributed under the License is distributed on an "AS IS" BASIS,
-	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-	See the License for the specific language governing permissions and
-	limitations under the License.
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
 */
 package main
 
 import (
 	"context"
-	"github.com/loopholelabs/frpc-go-benchmarks/config"
-	"github.com/loopholelabs/frpc-go-benchmarks/grpc/benchmark"
-	"google.golang.org/grpc"
-	"log"
+	"io"
 	"net"
 	"os"
-	"runtime"
 	"time"
+
+	"github.com/loopholelabs/frpc-go-benchmarks/config"
+	"github.com/loopholelabs/frpc-go-benchmarks/grpc/benchmark"
+	grpcZeroLog "github.com/philip-bui/grpc-zerolog"
+	"github.com/rs/zerolog"
+	"google.golang.org/grpc"
 )
 
 type svc struct {
@@ -47,8 +49,10 @@ func main() {
 	}
 
 	shouldLog := len(os.Args) > 2
-
-	grpcServer := grpc.NewServer()
+	log := zerolog.New(io.Discard)
+	grpcServer := grpc.NewServer(
+		grpcZeroLog.UnaryInterceptorWithLogger(&log),
+	)
 
 	benchmark.RegisterBenchmarkServiceServer(grpcServer, new(svc))
 
@@ -61,7 +65,7 @@ func main() {
 		}()
 
 		for {
-			log.Printf("Num goroutines: %d\n", runtime.NumGoroutine())
+			// log.Printf("Num goroutines: %d\n", runtime.NumGoroutine())
 			time.Sleep(time.Millisecond * 500)
 		}
 	} else {

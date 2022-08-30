@@ -6,6 +6,7 @@ require (
 	github.com/loopholelabs/frisbee-go v0.6.0
 	github.com/loopholelabs/polyglot-go v0.3.0
 	github.com/loov/hrtime v1.0.3
+	github.com/philip-bui/grpc-zerolog v1.0.1
 	github.com/rs/zerolog v1.27.0
 	github.com/twitchtv/twirp v8.1.2+incompatible
 	google.golang.org/grpc v1.48.0
